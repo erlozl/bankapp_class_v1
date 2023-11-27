@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 반드시 세미콜론 생략  -->
+<mapper namespace="com.tenco.bankapp.repository.interfaces.HistoryRepository">
+	<insert id="insert" parameterType="com.tenco.bankapp.repository.entity.History"> 
+		insert into history_tb(amount, w_balance, d_balance, w_account_id, d_account_id)
+		values(#{amount}, #{wBalance}, #{dBalance}, #{wAccountId}, #{dAccountId})
+	</insert>
+	
+	<delete id="deleteById" parameterType="int">
+		delete from history_tb where id= #{id}
+	</delete>
+	
+	<update id="updateById">
+		update history_tb
+		set amount = #{amount},
+		w_balance = #{wBalance},
+		d_balance = #{dBalance}
+		where id = #{id}
+	</update>
+	
+	<select id="findAll" resultType = "com.tenco.bankapp.repository.entity.History">
+		select * from history_tb where id = #{id}
+	</select>
+	
+	<!-- 동적 쿼리 생성 예정 -->
+	
+</mapper>

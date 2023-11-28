@@ -9,8 +9,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.yaml.snakeyaml.tokens.DocumentEndToken;
 
@@ -22,6 +24,7 @@ import com.tenco.bankapp.handler.exception.CustomPageException;
 import com.tenco.bankapp.handler.exception.CustomRestfullException;
 import com.tenco.bankapp.handler.exception.UnAuthorizedException;
 import com.tenco.bankapp.repository.entity.Account;
+import com.tenco.bankapp.repository.entity.History;
 import com.tenco.bankapp.repository.entity.User;
 import com.tenco.bankapp.service.AccountService;
 import com.tenco.bankapp.utils.Define;
@@ -41,9 +44,6 @@ public class AccountController {
 	public String list(Model model) {
 //		인증된 사람만 목록 확인 가능
 		User principal = (User)session.getAttribute(Define.PRINCIPAL);
-		if(principal == null) {
-			throw new UnAuthorizedException("인증된 사용자가 아닙니다", HttpStatus.UNAUTHORIZED);
-		}
 		
 		List<Account> accountList = accountService.readAccountList(principal.getId());
 //		Slf4j=성능적으로 좋음, 비동기적으로 돌아가기 때문에 
@@ -200,6 +200,29 @@ public class AccountController {
 		
 		accountService.updateAccountTransfer(dto,principal.getId());
 		return "redirect:/account/list";
+	}
+	
+	// 계좌 상세보기 화면 요청 처리 - 데이터를 입력 받는 방법 정리
+	// http://localhost/account/detail/1
+	// http://localhost/account/detail/1?type=deposit
+	// http://localhost/account/detail/1?type=withdraw
+	// 기본값 세팅 가능 
+	@GetMapping("/detail/{id}")
+	public String detail(@PathVariable(name="id") Integer accountId, @RequestParam(name= "type",defaultValue = "all", required = false) String type, Model model) {
+		// 인증검사, 유효성 검사
+		User principal = (User)session.getAttribute(Define.PRINCIPAL);
+		if(principal == null) {
+			throw new UnAuthorizedException("로그인 먼저 해주세요", HttpStatus.UNAUTHORIZED);
+		}
+		// 상세 보기 화면 요청시 --> 데이터를 내려주어야 함
+		// account 데이터, 접근 주체, 거래 내역 정보 
+		Account account = accountService.findById(accountId);
+		List<History> historyList = accountService.readHistoryListByAccount(type, accountId); 
+		
+		model.addAttribute("account", account);
+		model.addAttribute(Define.PRINCIPAL, principal);
+		model.addAttribute("historyList", historyList);
+		return "account/detail";
 	}
 	
 }

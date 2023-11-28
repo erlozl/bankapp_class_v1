@@ -15,7 +15,7 @@ public interface HistoryRepository {
 	public int updateById(History history);
 	public int deleteById(Integer id);
 	public List<History> findAll();
-	public List<History> findByIdAndDynamicType(@Param("type") String type, @Param("id") Integer id);
+	public List<History> findByIdAndDynamicType(@Param("type") String type, @Param("accountId") Integer accountId);
 	
 	// 거래내역 조회
 	//public List<History> findByAccountNumber(String id);

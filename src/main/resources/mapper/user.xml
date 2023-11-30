@@ -6,8 +6,8 @@
 <mapper namespace="com.tenco.bankapp.repository.interfaces.UserRepository">
 	
 	<insert id="insert">
-		insert into user_tb(username, password, fullname, created_at) 
-		values (#{username},#{password},#{fullname},now())
+		insert into user_tb(username, password, fullname, origin_file_name, upload_file_name, created_at) 
+		values (#{username},#{password},#{fullname}, #{originFileName}, #{uploadFileName}, now())
 	</insert>
 	
 	<update id = "updateById">
@@ -37,6 +37,10 @@
 	<select id = "findAll" resultType="com.tenco.bankapp.repository.entity.User">
 		select * from user_tb;
 	</select>
-	
+
+	<!-- username으로 사용자 검색 -->
+	<select id = "findByUsername" resultType="com.tenco.bankapp.repository.entity.User">
+		select * from user_tb where username = #{username}
+	</select>
 	
 </mapper>

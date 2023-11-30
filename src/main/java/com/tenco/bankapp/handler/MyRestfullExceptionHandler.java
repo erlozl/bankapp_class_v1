@@ -42,4 +42,5 @@ public class MyRestfullExceptionHandler {
 		sb.append("</script>");
 		return sb.toString();
 	}
+	
 }
